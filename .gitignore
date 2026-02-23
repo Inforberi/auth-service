@@ -1,0 +1,71 @@
+# =========================
+# Go build artifacts
+# =========================
+/bin/
+/build/
+/dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.cover
+*.coverprofile
+coverage.out
+
+# =========================
+# Go modules (не игнорируем go.mod и go.sum!)
+# =========================
+vendor/   # если НЕ используешь vendoring — можно оставить
+
+# =========================
+# Environment files
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+tmp/
+*.tmp
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE / Editor
+# =========================
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# =========================
+# Docker
+# =========================
+docker-data/
+postgres_data/
+redis_data/
+
+# =========================
+# Test artifacts
+# =========================
+testdata/*.db
+testdata/*.sqlite
+
+# =========================
+# Misc
+# =========================
+*.pid
+*.seed
+*.gz
+*.zip
