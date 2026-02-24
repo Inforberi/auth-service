@@ -1,7 +1,6 @@
-create extension if not exists citext;
 create extension if not exists pgcrypto;
 
-CREATE TABLE users (
+create table users (
   id uuid primary key default gen_random_uuid(),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -10,22 +9,45 @@ CREATE TABLE users (
   disabled_at timestamptz
 );
 
-CREATE index users_disabled on users(disabled_at);
+create index users_disabled_idx on users(disabled_at);
+
+create table auth_providers (
+  code text primary key,
+  kind text not null check (kind in ('email', 'phone', 'oauth')),
+  enabled boolean not null default false,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+insert into auth_providers (code, kind, enabled)
+values
+  ('email', 'email', true),
+  ('phone', 'phone', false),
+  ('oauth_google', 'oauth', false),
+  ('oauth_apple', 'oauth', false)
+on conflict (code) do nothing;
 
 create table user_identities (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references users(id) on delete cascade,
 
-  provider text not null,
+  provider_code text not null references auth_providers(code),
   identifier text not null,
+  identifier_normalized text not null,
+  is_verified boolean not null default false,
+  verified_at timestamptz,
 
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
 
-  unique (provider, identifier)
+  unique (provider_code, identifier_normalized),
+  check (char_length(identifier_normalized) > 0),
+  check (provider_code <> 'email' or identifier_normalized = lower(identifier_normalized)),
+  check (verified_at is null or is_verified = true)
 );
 
-create index user_identities_lookup_idx on user_identities(provider, identifier);
+create index user_identities_user_id_idx on user_identities(user_id);
+create index user_identities_lookup_idx on user_identities(provider_code, identifier_normalized);
 
 create table user_passwords (
   user_id uuid primary key references users(id) on delete cascade,
