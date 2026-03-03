@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/inforberi/auth-service/internal/config"
-	"github.com/inforberi/auth-service/internal/infra/postgres"
-	repo "github.com/inforberi/auth-service/internal/repository/postgres"
+	infraPG "github.com/inforberi/auth-service/internal/infra/postgres"
+	repoPG "github.com/inforberi/auth-service/internal/repository/postgres"
 	"github.com/inforberi/auth-service/internal/service/auth"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -21,13 +21,13 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	pgPool, err := postgres.NewPgPool(ctx, cfg.Postgres)
+	pgPool, err := infraPG.NewPgPool(ctx, cfg.Postgres)
 	if err != nil {
 		log.Error("failed to create pg pool", "err", err)
 		return nil, err
 	}
 
-	repo := repo.NewAuthStore(pgPool)
+	repo := repoPG.NewAuthStore(pgPool)
 
 	// service deps
 	clock := auth.SystemClock{}

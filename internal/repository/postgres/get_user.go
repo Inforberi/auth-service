@@ -3,25 +3,42 @@ package postgres
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
 
-func (s *AuthStore) GetUserIdByEmail(ctx context.Context, email string) (string, bool, error) {
-	var userID string
+func (s *AuthStore) GetUserByEmail(
+	ctx context.Context,
+	emailNorm string,
+) (userID string, passwordHash string, sessionVersion int, disabledAt *time.Time, found bool, err error) {
 
-	err := s.db.QueryRow(ctx, `
-		select user_id
-		from user_identities
-		where provider_code = 'email' and identifier_normalized = $1
-	`, email).Scan(&userID)
+	var ph *string
+
+	err = s.db.QueryRow(ctx, `
+		select
+		  u.id,
+		  u.session_version,
+		  u.disabled_at,
+		  p.password_hash
+		from user_identities i
+		join users u on u.id = i.user_id
+		left join user_passwords p on p.user_id = u.id
+		where i.provider_code = 'email'
+		  and i.identifier_normalized = $1
+		limit 1
+	`, emailNorm).Scan(&userID, &sessionVersion, &disabledAt, &ph)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return "", false, nil
+			return "", "", 0, nil, false, nil
 		}
-		return "", false, err
+		return "", "", 0, nil, false, err
 	}
 
-	return userID, true, nil
+	if ph != nil {
+		passwordHash = *ph
+	}
+
+	return userID, passwordHash, sessionVersion, disabledAt, true, nil
 }
