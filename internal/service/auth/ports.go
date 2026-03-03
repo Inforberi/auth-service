@@ -6,7 +6,7 @@ import (
 )
 
 type Auth interface {
-	CreateUser(ctx context.Context, now time.Time) (userID string, err error)
+	CreateUserWithEmailPassword(ctx context.Context, email, emailNorm, passwordHash string, now time.Time) (string, error)
 }
 
 type Clock interface {
