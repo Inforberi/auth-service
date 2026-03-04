@@ -2,4 +2,7 @@ package postgres
 
 import "errors"
 
-var ErrEmailTaken = errors.New("email already taken")
+var (
+	ErrSessionNotFound = errors.New("session not found")
+	ErrEmailTaken      = errors.New("email already taken")
+)
