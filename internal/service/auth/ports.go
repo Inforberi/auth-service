@@ -7,6 +7,7 @@ import (
 
 type Auth interface {
 	// register
+	IsProviderEnabled(ctx context.Context, code string) (bool, error)
 	CreateUserWithEmailPassword(ctx context.Context, email, emailNorm, passwordHash string, now time.Time) (string, error)
 
 	// login: найти пользователя + пароль
