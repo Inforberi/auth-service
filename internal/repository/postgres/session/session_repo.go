@@ -1,0 +1,13 @@
+package session
+
+import "github.com/jackc/pgx/v5/pgxpool"
+
+type SessionRepo struct {
+	db *pgxpool.Pool
+}
+
+func NewSessionRepo(db *pgxpool.Pool) *SessionRepo {
+	return &SessionRepo{
+		db: db,
+	}
+}

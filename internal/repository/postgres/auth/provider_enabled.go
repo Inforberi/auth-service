@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (s *AuthStore) IsProviderEnabled(ctx context.Context, code string) (bool, error) {
+func (s *AuthRepo) IsProviderEnabled(ctx context.Context, code string) (bool, error) {
 	var enabled bool
 
 	err := s.db.QueryRow(ctx, `

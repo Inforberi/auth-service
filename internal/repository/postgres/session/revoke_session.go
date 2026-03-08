@@ -1,11 +1,11 @@
-package postgres
+package session
 
 import (
 	"context"
 	"time"
 )
 
-func (s *AuthStore) RevokeSession(
+func (s *SessionRepo) RevokeSession(
 	ctx context.Context,
 	sessionID string,
 	now time.Time,

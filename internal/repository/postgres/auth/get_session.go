@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (s *AuthStore) GetSessionByTokenHash(
+func (s *AuthRepo) GetSessionByTokenHash(
 	ctx context.Context,
 	tokenHash []byte,
 ) (sessionID string, userID string, sessionVersion int, expiresAt time.Time, revokedAt *time.Time, err error) {

@@ -2,43 +2,61 @@ package auth
 
 import "context"
 
-func (s *Service) RegisterEmail(ctx context.Context, input RegisterInput) error {
+func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (RegisterResult, error) {
 	enabled, err := s.repo.IsProviderEnabled(ctx, "email")
 	if err != nil {
-		return err
+		return RegisterResult{}, err
 	}
 	if !enabled {
-		return ErrProviderNotEnabled
+		return RegisterResult{}, ErrProviderNotEnabled
 	}
 
 	email := input.Email
 	password := input.Password
 
 	// Normalize Email
-	normalizeEmail := Normalize(email)
+	normalizeEmail := NormalizeEmail(email)
 
 	// Validate Email
 	if err = ValidateEmail(normalizeEmail); err != nil {
-		return err
+		return RegisterResult{}, err
 	}
 
 	// Validate Password
 	if err = ValidatePassword(password); err != nil {
-		return err
+		return RegisterResult{}, err
 	}
 
 	// Hash password
 	hashPassword, err := s.hash.Hash(password)
 	if err != nil {
-		return err
+		return RegisterResult{}, err
 	}
+
+	now := s.clock.Now().UTC()
 
 	// Create user
-	userId, err := s.repo.CreateUserWithEmailPassword(ctx, email, normalizeEmail, hashPassword, s.clock.Now())
+	userID, sessionVersion, err := s.repo.CreateUserWithEmailPassword(ctx, email, normalizeEmail, hashPassword, now)
 	if err != nil {
-		return err
+		return RegisterResult{}, err
 	}
 
-	// TODO: Create session 
-	s.repo.CreateSession(ctx, userId)
+	sessionID, token, expiresAt, err := s.sessions.CreateSession(
+		ctx,
+		userID,
+		sessionVersion,
+		input.IP,
+		input.UserAgent,
+		input.DeviceID,
+	)
+	if err != nil {
+		return RegisterResult{}, err
+	}
+
+	return RegisterResult{
+		UserID:    userID,
+		SessionID: sessionID,
+		Token:     token,
+		ExpiresAt: expiresAt,
+	}, nil
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func (s *AuthStore) GetUserByEmail(
+func (s *AuthRepo) GetUserByEmail(
 	ctx context.Context,
 	emailNorm string,
 ) (userID string, passwordHash string, sessionVersion int, disabledAt *time.Time, found bool, err error) {

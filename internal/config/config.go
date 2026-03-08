@@ -34,6 +34,10 @@ type Postgres struct {
 	MaxConnIdleTime time.Duration `env:"PG_MAX_CONN_IDLE_TIME" env-default:"5m"`
 }
 
+type Auth struct {
+	SessionTTL time.Duration `env:"SESSION_TTL" env-default:"168h"`
+}
+
 func LoadConfig() (*Config, error) {
 	var cfg Config
 

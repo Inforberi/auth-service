@@ -9,22 +9,21 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
-func (s *AuthStore) CreateUserWithEmailPassword(ctx context.Context, email, emailNorm, passwordHash string, now time.Time) (string, error) {
+func (s *AuthRepo) CreateUserWithEmailPassword(ctx context.Context, email, emailNorm, passwordHash string, now time.Time) (userID string, sessionVersion int, err error) {
 	tx, err := s.db.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 	// гарантируем rollback если не commit
 	defer func() { _ = tx.Rollback(ctx) }()
 
-	var userID string
 	err = tx.QueryRow(ctx, `
 		insert into users (created_at, updated_at)
 		values ($1, $1)
-		returning id
-	`, now).Scan(&userID)
+		returning id, session_version
+	`, now).Scan(&userID, &sessionVersion)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	_, err = tx.Exec(ctx, `
@@ -41,9 +40,9 @@ func (s *AuthStore) CreateUserWithEmailPassword(ctx context.Context, email, emai
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return "", ErrEmailTaken
+			return "", 0, ErrEmailTaken
 		}
-		return "", err
+		return "", 0, err
 	}
 
 	_, err = tx.Exec(ctx, `
@@ -56,12 +55,12 @@ func (s *AuthStore) CreateUserWithEmailPassword(ctx context.Context, email, emai
 	`, userID, passwordHash, now)
 
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 
 	if err := tx.Commit(ctx); err != nil {
-		return "", err
+		return "", 0, err
 	}
 
-	return userID, nil
+	return userID, sessionVersion, nil
 }
