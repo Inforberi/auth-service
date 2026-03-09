@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"net/http"
 
+	"github.com/inforberi/auth-service/internal/app"
 	"github.com/inforberi/auth-service/internal/config"
 	"github.com/inforberi/auth-service/internal/logger"
 )
@@ -19,6 +21,16 @@ func main() {
 	logg := logger.NewLogger(cfg)
 	logg.Info("init logger success")
 
-	// a := app.NewApp(logg)
+	application, err := app.NewApp(cfg, logg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: application.Router,
+	}
+
+	log.Fatal(server.ListenAndServe())
 
 }

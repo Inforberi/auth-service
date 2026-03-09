@@ -5,7 +5,7 @@ import (
 	"crypto/sha256"
 )
 
-func (s *SessionService) CreateSession(ctx context.Context, userID string, sessionVersion int, ip, ua *string, deviceID *string) (CreateSessionResult, error) {
+func (s *SessionService) CreateSession(ctx context.Context, userID string, sessionVersion int, ip, ua, deviceID *string) (CreateSessionResult, error) {
 	rawToken, err := s.token.New()
 	if err != nil {
 		return CreateSessionResult{}, ErrGenerateToken
@@ -23,5 +23,9 @@ func (s *SessionService) CreateSession(ctx context.Context, userID string, sessi
 		return CreateSessionResult{}, ErrCreateSession
 	}
 
-	return CreateSessionResult{SessionID: sessionID}, err
+	return CreateSessionResult{
+		SessionID: sessionID,
+		Token:     rawToken,
+		ExpiresAt: expiresAt,
+	}, nil
 }

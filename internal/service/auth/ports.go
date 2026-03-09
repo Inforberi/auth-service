@@ -3,6 +3,8 @@ package auth
 import (
 	"context"
 	"time"
+
+	"github.com/inforberi/auth-service/internal/service/session"
 )
 
 type Auth interface {
@@ -29,5 +31,5 @@ type SessionCreator interface {
 		userID string,
 		sessionVersion int,
 		ip, ua, deviceID *string,
-	) (sessionID string, token string, expiresAt time.Time, err error)
+	) (session.CreateSessionResult, error)
 }

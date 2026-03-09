@@ -20,6 +20,7 @@ type SessionRepo interface {
 		err error,
 	)
 	UpdateSessionLastSeen(ctx context.Context, sessionID string, now time.Time) error
+
 	RevokeSession(ctx context.Context, sessionID string, now time.Time) error
 }
 

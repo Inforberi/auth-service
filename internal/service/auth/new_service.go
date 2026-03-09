@@ -7,7 +7,7 @@ type AuthService struct {
 	sessions SessionCreator
 }
 
-func NewAuthService(repo Auth, clock Clock, hash PasswordHasher) *AuthService {
+func NewAuthService(repo Auth, clock Clock, hash PasswordHasher, sessions SessionCreator) *AuthService {
 
-	return &AuthService{repo: repo, clock: clock, hash: hash}
+	return &AuthService{repo: repo, clock: clock, hash: hash, sessions: sessions}
 }

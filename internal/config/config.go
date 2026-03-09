@@ -11,6 +11,7 @@ type Config struct {
 	AppEnv   string `env:"APP_ENV" default:"prod"`
 	Logger   Logger
 	Postgres Postgres
+	Auth     Auth
 }
 
 type Logger struct {
