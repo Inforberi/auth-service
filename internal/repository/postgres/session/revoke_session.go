@@ -3,6 +3,8 @@ package session
 import (
 	"context"
 	"time"
+
+	"github.com/inforberi/auth-service/internal/service/session"
 )
 
 func (s *SessionRepo) RevokeSession(
@@ -34,7 +36,7 @@ func (s *SessionRepo) RevokeSession(
 			return err
 		}
 		if !exists {
-			return ErrSessionNotFound
+			return session.ErrSessionNotFound
 		}
 		// exists == true -> уже revoked, считаем успехом
 		return nil

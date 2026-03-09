@@ -9,6 +9,7 @@ import (
 	"github.com/inforberi/auth-service/internal/config"
 	router "github.com/inforberi/auth-service/internal/http"
 	authHandler "github.com/inforberi/auth-service/internal/http/handlers/auth"
+	sessionHandler "github.com/inforberi/auth-service/internal/http/handlers/session"
 	"github.com/inforberi/auth-service/internal/infra/postgres"
 	"github.com/inforberi/auth-service/internal/pkg"
 	repoAuth "github.com/inforberi/auth-service/internal/repository/postgres/auth"
@@ -46,11 +47,12 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	sessionService := session.NewSessionService(sessionRepo, token, clock, cfg.Auth)
 	authService := auth.NewAuthService(authRepo, clock, hasher, sessionService)
 
-	// handler
+	// handlers
 	authHandler := authHandler.NewAuthHandler(authService, log)
+	sessionHandler := sessionHandler.NewSessionHandler(sessionService, log)
 
 	// router
-	router := router.NewRouter(authHandler)
+	router := router.NewRouter(authHandler, sessionHandler)
 
 	return &App{
 		Log:    log,

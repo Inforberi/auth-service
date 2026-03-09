@@ -1,0 +1,16 @@
+package session
+
+import (
+	"log/slog"
+
+	"github.com/inforberi/auth-service/internal/service/session"
+)
+
+type SessionHandler struct {
+	sessionService *session.SessionService
+	log            *slog.Logger
+}
+
+func NewSessionHandler(sessionService *session.SessionService, log *slog.Logger) *SessionHandler {
+	return &SessionHandler{sessionService: sessionService, log: log}
+}
