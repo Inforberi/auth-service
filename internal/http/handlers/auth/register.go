@@ -30,14 +30,28 @@ func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.authService.RegisterEmail(r.Context(), input)
 	if err != nil {
-		switch {
-		case errors.Is(err, auth.ErrProviderNotEnabled):
-			helpers.WriteError(w, http.StatusBadRequest, "provider_not_enabled", err.Error())
-		case errors.Is(err, auth.ErrEmailTaken):
+
+		if errors.Is(err, auth.ErrEmailTaken) {
 			helpers.WriteError(w, http.StatusConflict, "email_taken", err.Error())
-		default:
-			helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
+			return
 		}
+
+		// все validation ошибки
+		if errors.Is(err, auth.ErrEmptyEmail) ||
+			errors.Is(err, auth.ErrInvalidEmail) ||
+			errors.Is(err, auth.ErrPasswordTooShort) ||
+			errors.Is(err, auth.ErrPasswordTooLong) ||
+			errors.Is(err, auth.ErrPasswordNoLetter) ||
+			errors.Is(err, auth.ErrPasswordNoDigit) {
+
+			helpers.WriteError(w, http.StatusBadRequest, "validation_error", err.Error())
+			return
+		}
+
+		// неизвестная ошибка
+		h.log.Error("register email failed", "err", err)
+
+		helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
 		return
 	}
 

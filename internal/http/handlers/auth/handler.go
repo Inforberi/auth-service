@@ -1,11 +1,16 @@
 package auth
 
-import "github.com/inforberi/auth-service/internal/service/auth"
+import (
+	"log/slog"
+
+	"github.com/inforberi/auth-service/internal/service/auth"
+)
 
 type AuthHandler struct {
 	authService *auth.AuthService
+	log         *slog.Logger
 }
 
-func NewAuthHandler(authService *auth.AuthService) *AuthHandler {
-	return &AuthHandler{authService: authService}
+func NewAuthHandler(authService *auth.AuthService, log *slog.Logger) *AuthHandler {
+	return &AuthHandler{authService: authService, log: log}
 }

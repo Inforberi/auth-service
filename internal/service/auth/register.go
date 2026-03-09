@@ -1,9 +1,6 @@
 package auth
 
-import (
-	"context"
-	"errors"
-)
+import "context"
 
 func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (RegisterResult, error) {
 	enabled, err := s.repo.IsProviderEnabled(ctx, "email")
@@ -33,7 +30,7 @@ func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (R
 	// Hash password
 	hashPassword, err := s.hash.Hash(password)
 	if err != nil {
-		return RegisterResult{}, ErrRegister
+		return RegisterResult{}, err
 	}
 
 	now := s.clock.Now().UTC()
@@ -41,10 +38,7 @@ func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (R
 	// Create user
 	userID, sessionVersion, err := s.repo.CreateUserWithEmailPassword(ctx, email, normalizeEmail, hashPassword, now)
 	if err != nil {
-		if errors.Is(err, ErrEmailTaken) {
-			return RegisterResult{}, ErrEmailTaken
-		}
-		return RegisterResult{}, ErrRegister
+		return RegisterResult{}, err
 	}
 
 	// Create session

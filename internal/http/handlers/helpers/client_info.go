@@ -1,6 +1,10 @@
 package helpers
 
-import "net/http"
+import (
+	"net"
+	"net/http"
+	"strings"
+)
 
 type ClientInfo struct {
 	IP        *string
@@ -9,38 +13,42 @@ type ClientInfo struct {
 }
 
 func ExtractClientInfo(r *http.Request) ClientInfo {
-
-	var ipPtr *string
-	var uaPtr *string
-	var devicePtr *string
-
-	// IP
-	ip := r.Header.Get("X-Real-IP")
-	if ip == "" {
-		ip = r.Header.Get("X-Forwarded-For")
-	}
-	if ip == "" {
-		ip = r.RemoteAddr
-	}
-	if ip != "" {
-		ipPtr = &ip
-	}
-
-	// User Agent
-	ua := r.UserAgent()
-	if ua != "" {
-		uaPtr = &ua
-	}
-
-	// Device ID
-	device := r.Header.Get("X-Device-ID")
-	if device != "" {
-		devicePtr = &device
-	}
-
 	return ClientInfo{
-		IP:        ipPtr,
-		UserAgent: uaPtr,
-		DeviceID:  devicePtr,
+		IP:        extractIP(r),
+		UserAgent: stringPtr(strings.TrimSpace(r.UserAgent())),
+		DeviceID:  stringPtr(strings.TrimSpace(r.Header.Get("X-Device-ID"))),
 	}
+}
+
+func extractIP(r *http.Request) *string {
+	if ip := strings.TrimSpace(r.Header.Get("X-Real-IP")); ip != "" {
+		return &ip
+	}
+
+	if xff := strings.TrimSpace(r.Header.Get("X-Forwarded-For")); xff != "" {
+		parts := strings.Split(xff, ",")
+		ip := strings.TrimSpace(parts[0])
+		if ip != "" {
+			return &ip
+		}
+	}
+
+	host, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
+	if err == nil && host != "" {
+		return &host
+	}
+
+	remote := strings.TrimSpace(r.RemoteAddr)
+	if remote != "" {
+		return &remote
+	}
+
+	return nil
+}
+
+func stringPtr(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
 }

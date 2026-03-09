@@ -47,7 +47,7 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	authService := auth.NewAuthService(authRepo, clock, hasher, sessionService)
 
 	// handler
-	authHandler := authHandler.NewAuthHandler(authService)
+	authHandler := authHandler.NewAuthHandler(authService, log)
 
 	// router
 	router := router.NewRouter(authHandler)
