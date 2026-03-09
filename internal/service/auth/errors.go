@@ -15,6 +15,11 @@ var (
 	ErrPasswordNoDigit  = errors.New("password must contain at least one digit")
 	ErrHashFormat       = errors.New("invalid password hash format")
 
+	// Auth
+	ErrInvalidCredentials = errors.New("invalid email or password")
+	ErrUserDisabled       = errors.New("user is disabled")
+	ErrLogin              = errors.New("login failed")
+
 	// Provider
 	ErrProviderNotEnabled = errors.New("Provider is not enabled")
 

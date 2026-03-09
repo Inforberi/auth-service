@@ -13,6 +13,7 @@ func NewRouter(authHandler *auth.AuthHandler) http.Handler {
 	r.Route("/v1", func(r chi.Router) {
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/register/email", authHandler.RegisterEmail)
+			r.Post("/login/email", authHandler.LoginEmail)
 		})
 	})
 

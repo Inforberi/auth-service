@@ -11,7 +11,7 @@ import (
 )
 
 func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
-	var req auth.RegisterInput
+	var req registerEmailRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		helpers.WriteError(w, http.StatusBadRequest, "invalid_request", "invalid json body")
