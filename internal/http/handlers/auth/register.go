@@ -18,6 +18,7 @@ func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// get client info
 	client := helpers.ExtractClientInfo(r)
 
 	input := auth.RegisterInput{
@@ -28,15 +29,15 @@ func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
 		DeviceID:  client.DeviceID,
 	}
 
+	// service register
 	res, err := h.authService.RegisterEmail(r.Context(), input)
 	if err != nil {
-
 		if errors.Is(err, auth.ErrEmailTaken) {
 			helpers.WriteError(w, http.StatusConflict, "email_taken", err.Error())
 			return
 		}
 
-		// все validation ошибки
+		// validation errors
 		if errors.Is(err, auth.ErrEmptyEmail) ||
 			errors.Is(err, auth.ErrInvalidEmail) ||
 			errors.Is(err, auth.ErrPasswordTooShort) ||
@@ -48,8 +49,14 @@ func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// неизвестная ошибка
-		h.log.Error("register email failed", "err", err)
+		// unknown errors
+		h.log.Error("register email failed",
+			"err", err,
+			"email", req.Email,
+			"ip", client.IP,
+			"method", r.Method,
+			"path", r.URL.Path,
+		)
 
 		helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
 		return

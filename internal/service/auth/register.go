@@ -1,6 +1,9 @@
 package auth
 
-import "context"
+import (
+	"context"
+	"errors"
+)
 
 func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (RegisterResult, error) {
 	enabled, err := s.repo.IsProviderEnabled(ctx, "email")
@@ -38,6 +41,9 @@ func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (R
 	// Create user
 	userID, sessionVersion, err := s.repo.CreateUserWithEmailPassword(ctx, email, normalizeEmail, hashPassword, now)
 	if err != nil {
+		if errors.Is(err, ErrEmailTaken) {
+			return RegisterResult{}, ErrEmailTaken
+		}
 		return RegisterResult{}, err
 	}
 

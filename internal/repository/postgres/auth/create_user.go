@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/inforberi/auth-service/internal/service/auth"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -40,7 +41,7 @@ func (s *AuthRepo) CreateUserWithEmailPassword(ctx context.Context, email, email
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
-			return "", 0, ErrEmailTaken
+			return "", 0, auth.ErrEmailTaken
 		}
 		return "", 0, err
 	}
