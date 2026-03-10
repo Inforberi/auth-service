@@ -6,9 +6,7 @@ type registerEmailRequest struct {
 }
 
 type registerEmailResponse struct {
-	UserID    string `json:"user_id"`
-	SessionID string `json:"session_id"`
-	ExpiresAt string `json:"expires_at"`
+	UserID string `json:"user_id"`
 }
 
 type LoginEmailRequest struct {
@@ -17,7 +15,5 @@ type LoginEmailRequest struct {
 }
 
 type LoginEmailResponse struct {
-	UserID    string `json:"user_id"`
-	SessionID string `json:"session_id"`
-	ExpiresAt string `json:"expires_at"`
+	UserID string `json:"user_id"`
 }

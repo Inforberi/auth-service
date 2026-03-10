@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
 	"github.com/inforberi/auth-service/internal/service/auth"
@@ -56,8 +55,6 @@ func (h *AuthHandler) LoginEmail(w http.ResponseWriter, r *http.Request) {
 	helpers.SetSessionCookie(w, res.Token, res.ExpiresAt)
 
 	helpers.WriteJSON(w, http.StatusOK, LoginEmailResponse{
-		UserID:    res.UserID,
-		SessionID: res.SessionID,
-		ExpiresAt: res.ExpiresAt.UTC().Format(time.RFC3339),
+		UserID: res.UserID,
 	})
 }
