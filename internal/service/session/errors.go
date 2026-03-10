@@ -14,5 +14,5 @@ var (
 	ErrSessionVersionMismatch = errors.New("Session version mismatch")
 	ErrUserIsDisabled         = errors.New("user is disabled")
 	ErrUpdateSessionLastSeen  = errors.New("Error update session")
-	ErrRevokeSession          = errors.New("Revoke session")
+	ErrRevokeSession          = errors.New("Error revoke session")
 )

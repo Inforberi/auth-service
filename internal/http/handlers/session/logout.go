@@ -13,8 +13,7 @@ func (s *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.sessionService.RevokeSession(r.Context(), token)
-	if err != nil {
+	if err = s.sessionService.Logout(r.Context(), token); err != nil {
 		s.log.Error("logout failed",
 			"err", err,
 			"path", r.URL.Path,
@@ -26,4 +25,5 @@ func (s *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	helpers.ClearSessionCookie(w)
+	w.WriteHeader(http.StatusNoContent)
 }

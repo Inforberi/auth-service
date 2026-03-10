@@ -14,7 +14,7 @@ func (s *SessionService) CreateSession(ctx context.Context, userID string, sessi
 	hash := sha256.Sum256([]byte(rawToken))
 	tokenHash := hash[:]
 
-	now := s.clock.Now()
+	now := s.clock.Now().UTC()
 	expiresAt := now.Add(s.sessionTTL)
 
 	sessionID, err := s.repo.CreateSession(ctx, userID, sessionVersion, tokenHash, now, expiresAt, ip, ua, deviceID)
