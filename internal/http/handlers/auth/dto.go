@@ -17,3 +17,7 @@ type LoginEmailRequest struct {
 type LoginEmailResponse struct {
 	UserID string `json:"user_id"`
 }
+
+type MeResponse struct {
+	UserID string `json:"user_id"`
+}

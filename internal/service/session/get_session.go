@@ -5,44 +5,36 @@ import (
 )
 
 func (s *SessionService) GetSessionByTokenHash(ctx context.Context, tokenHash []byte) (GetSessionResult, error) {
-	sessionID,
-		userID,
-		sessionVersion,
-		expiresAt,
-		revokedAt,
-		actualSessionVersion,
-		disabledAt,
-		found,
-		err := s.repo.GetSessionByTokenHash(ctx, tokenHash)
+	session, err := s.repo.GetSessionByTokenHash(ctx, tokenHash)
 	if err != nil {
 		return GetSessionResult{}, ErrGetSession
 	}
 
-	if !found {
+	if !session.Found {
 		return GetSessionResult{}, ErrSessionNotFound
 	}
 
 	now := s.clock.Now().UTC()
 
-	if revokedAt != nil && !revokedAt.After(now) {
+	if session.RevokedAt != nil && !session.RevokedAt.After(now) {
 		return GetSessionResult{}, ErrSessionIsRevoked
 	}
 
-	if !expiresAt.After(now) {
+	if !session.ExpiresAt.After(now) {
 		return GetSessionResult{}, ErrSessionIsExpired
 	}
 
-	if actualSessionVersion != sessionVersion {
+	if session.ActualSessionVersion != session.SessionVersion {
 		return GetSessionResult{}, ErrSessionVersionMismatch
 	}
 
-	if disabledAt != nil && !disabledAt.After(now) {
+	if session.DisabledAt != nil && !session.DisabledAt.After(now) {
 		return GetSessionResult{}, ErrUserIsDisabled
 	}
 
 	return GetSessionResult{
-		SessionID:      sessionID,
-		UserID:         userID,
-		SessionVersion: sessionVersion,
+		SessionID:      session.SessionID,
+		UserID:         session.UserID,
+		SessionVersion: session.SessionVersion,
 	}, nil
 }

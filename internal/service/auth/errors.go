@@ -19,6 +19,7 @@ var (
 	ErrInvalidCredentials = errors.New("invalid email or password")
 	ErrUserDisabled       = errors.New("user is disabled")
 	ErrLogin              = errors.New("login failed")
+	ErrUnauthorized       = errors.New("unauthorized")
 
 	// Provider
 	ErrProviderNotEnabled = errors.New("Provider is not enabled")

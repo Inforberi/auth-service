@@ -32,4 +32,6 @@ type SessionCreator interface {
 		sessionVersion int,
 		ip, ua, deviceID *string,
 	) (session.CreateSessionResult, error)
+
+	GetSessionByTokenHash(ctx context.Context, tokenHash []byte) (session.GetSessionResult, error)
 }

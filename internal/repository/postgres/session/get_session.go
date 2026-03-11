@@ -3,23 +3,17 @@ package session
 import (
 	"context"
 	"errors"
-	"time"
 
+	"github.com/inforberi/auth-service/internal/service/session"
 	"github.com/jackc/pgx/v5"
 )
 
 func (s *SessionRepo) GetSessionByTokenHash(ctx context.Context, tokenHash []byte) (
-	sessionID string,
-	userID string,
-	sessionVersion int,
-	expiresAt time.Time,
-	revokedAt *time.Time,
-	actualSessionVersion int,
-	disabledAt *time.Time,
-	found bool,
-	err error,
-) {
-	err = s.db.QueryRow(ctx, `
+	session.GetRepoResult, error) {
+
+	var res session.GetRepoResult
+
+	err := s.db.QueryRow(ctx, `
 		select
 			s.id,
 			s.user_id,
@@ -32,21 +26,21 @@ func (s *SessionRepo) GetSessionByTokenHash(ctx context.Context, tokenHash []byt
 		join users u on u.id = s.user_id
 		where s.token_hash = $1
 	`, tokenHash).Scan(
-		&sessionID,
-		&userID,
-		&sessionVersion,
-		&expiresAt,
-		&revokedAt,
-		&actualSessionVersion,
-		&disabledAt,
+		&res.SessionID,
+		&res.UserID,
+		&res.SessionVersion,
+		&res.ExpiresAt,
+		&res.RevokedAt,
+		&res.ActualSessionVersion,
+		&res.DisabledAt,
 	)
 
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return "", "", 0, time.Time{}, nil, 0, nil, false, nil
+			return session.GetRepoResult{}, nil
 		}
-		return "", "", 0, time.Time{}, nil, 0, nil, false, err
+		return session.GetRepoResult{}, err
 	}
 
-	return sessionID, userID, sessionVersion, expiresAt, revokedAt, actualSessionVersion, disabledAt, true, nil
+	return session.GetRepoResult{SessionID: res.SessionID, UserID: res.UserID, SessionVersion: res.SessionVersion, ExpiresAt: res.ExpiresAt, RevokedAt: res.RevokedAt, ActualSessionVersion: res.ActualSessionVersion, DisabledAt: res.DisabledAt, Found: res.Found}, nil
 }

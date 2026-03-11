@@ -18,7 +18,11 @@ func NewRouter(authHandler *auth.AuthHandler, sessionHandler *session.SessionHan
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/register/email", authHandler.RegisterEmail)
 			r.Post("/login/email", authHandler.LoginEmail)
+
 			r.Post("/logout", sessionHandler.Logout)
+			r.Post("/logout-all", sessionHandler.LogoutAll)
+
+			r.Get("/me", authHandler.Me)
 		})
 	})
 

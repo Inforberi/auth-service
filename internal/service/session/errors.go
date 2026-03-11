@@ -15,4 +15,6 @@ var (
 	ErrUserIsDisabled         = errors.New("user is disabled")
 	ErrUpdateSessionLastSeen  = errors.New("Error update session")
 	ErrRevokeSession          = errors.New("Error revoke session")
+	ErrUserNotFound           = errors.New("User not found")
+	ErrLogoutAll              = errors.New("logout all failed")
 )
