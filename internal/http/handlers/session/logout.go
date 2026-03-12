@@ -9,11 +9,20 @@ import (
 func (s *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	token, err := helpers.ReadSessionCookie(r)
 	if err != nil {
-		helpers.WriteError(w, http.StatusUnauthorized, "unauthorized", "missing session")
+		if status, code, message, ok := mapSessionError(err); ok {
+			helpers.WriteError(w, status, code, message)
+			return
+		}
+		helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
 		return
 	}
 
 	if err = s.sessionService.Logout(r.Context(), token); err != nil {
+		if status, code, message, ok := mapSessionError(err); ok {
+			helpers.WriteError(w, status, code, message)
+			return
+		}
+
 		s.log.Error("logout failed",
 			"err", err,
 			"path", r.URL.Path,
@@ -31,11 +40,20 @@ func (s *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
 func (s *SessionHandler) LogoutAll(w http.ResponseWriter, r *http.Request) {
 	token, err := helpers.ReadSessionCookie(r)
 	if err != nil {
-		helpers.WriteError(w, http.StatusUnauthorized, "unauthorized", "missing session")
+		if status, code, message, ok := mapSessionError(err); ok {
+			helpers.WriteError(w, status, code, message)
+			return
+		}
+		helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
 		return
 	}
 
 	if err = s.sessionService.LogoutAll(r.Context(), token); err != nil {
+		if status, code, message, ok := mapSessionError(err); ok {
+			helpers.WriteError(w, status, code, message)
+			return
+		}
+
 		s.log.Error("logout all failed",
 			"err", err,
 			"path", r.URL.Path,

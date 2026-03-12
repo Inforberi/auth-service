@@ -1,6 +1,24 @@
 package auth
 
-import "context"
+import (
+	"context"
+	"time"
+)
+
+type LoginInput struct {
+	Email     string
+	Password  string
+	IP        *string
+	UserAgent *string
+	DeviceID  *string
+}
+
+type LoginResult struct {
+	UserID    string
+	SessionID string
+	Token     string
+	ExpiresAt time.Time
+}
 
 func (s *AuthService) LoginWithEmail(ctx context.Context, input LoginInput) (LoginResult, error) {
 	email := input.Email
@@ -38,6 +56,6 @@ func (s *AuthService) LoginWithEmail(ctx context.Context, input LoginInput) (Log
 		SessionID: session.SessionID,
 		Token:     session.Token,
 		ExpiresAt: session.ExpiresAt,
-	}, err
+	}, nil
 
 }

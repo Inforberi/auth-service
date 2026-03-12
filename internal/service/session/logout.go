@@ -42,6 +42,9 @@ func (s *SessionService) LogoutAll(ctx context.Context, token string) error {
 	}
 
 	if err = s.repo.IncrementUserSessionVersion(ctx, session.UserID, s.clock.Now().UTC()); err != nil {
+		if isRepoUserNotFound(err) {
+			return ErrUserNotFound
+		}
 		return fmt.Errorf("%w: %v", ErrLogoutAll, err)
 	}
 	return nil

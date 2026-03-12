@@ -3,8 +3,6 @@ package session
 import (
 	"context"
 	"time"
-
-	"github.com/inforberi/auth-service/internal/service/session"
 )
 
 func (s *SessionRepo) RevokeSession(
@@ -32,7 +30,7 @@ func (s *SessionRepo) RevokeSession(
 			return err
 		}
 		if !exists {
-			return session.ErrSessionNotFound
+			return ErrSessionNotFound
 		}
 		return nil
 	}
@@ -43,8 +41,8 @@ func (s *SessionRepo) RevokeSession(
 func (s *SessionRepo) IncrementUserSessionVersion(ctx context.Context, userID string, now time.Time) error {
 	ct, err := s.db.Exec(ctx, `
 	update users
-	set session_version = session_version + 1
-	updated_at = $2
+	set session_version = session_version + 1,
+	    updated_at = $2
 	where id = $1
 	`, userID, now)
 	if err != nil {
@@ -52,7 +50,7 @@ func (s *SessionRepo) IncrementUserSessionVersion(ctx context.Context, userID st
 	}
 
 	if ct.RowsAffected() == 0 {
-		return session.ErrUserNotFound
+		return ErrUserNotFound
 	}
 
 	return nil

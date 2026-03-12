@@ -9,7 +9,16 @@ type SessionRepo interface {
 	// sessions
 	CreateSession(ctx context.Context, userID string, sessionVersion int, tokenHash []byte, now, expiresAt time.Time, ip, ua *string, deviceID *string) (sessionID string, err error)
 	GetSessionByTokenHash(ctx context.Context, tokenHash []byte) (
-		GetRepoResult, error)
+		sessionID string,
+		userID string,
+		sessionVersion int,
+		expiresAt time.Time,
+		revokedAt *time.Time,
+		actualSessionVersion int,
+		disabledAt *time.Time,
+		found bool,
+		err error,
+	)
 	UpdateSessionLastSeen(ctx context.Context, sessionID string, now time.Time) error
 
 	RevokeSession(ctx context.Context, sessionID string, now time.Time) error

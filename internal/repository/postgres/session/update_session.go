@@ -9,8 +9,8 @@ func (s *SessionRepo) UpdateSessionLastSeen(ctx context.Context, sessionID strin
 
 	_, err := s.db.Exec(ctx, `
 		update sessions
+		set last_seen_at = $2
 		where id = $1
-		last_seen_at = $2
 	`, sessionID, now)
 
 	if err != nil {

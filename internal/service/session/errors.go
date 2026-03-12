@@ -2,6 +2,24 @@ package session
 
 import "errors"
 
+type repoSessionNotFound interface {
+	SessionNotFound() bool
+}
+
+type repoUserNotFound interface {
+	UserNotFound() bool
+}
+
+func isRepoSessionNotFound(err error) bool {
+	var marker repoSessionNotFound
+	return errors.As(err, &marker) && marker.SessionNotFound()
+}
+
+func isRepoUserNotFound(err error) bool {
+	var marker repoUserNotFound
+	return errors.As(err, &marker) && marker.UserNotFound()
+}
+
 var (
 	ErrCreateSession = errors.New("create session failed")
 	ErrGenerateToken = errors.New("generate token failed")

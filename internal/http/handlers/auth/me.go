@@ -1,11 +1,9 @@
 package auth
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
-	"github.com/inforberi/auth-service/internal/service/auth"
 )
 
 func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
@@ -17,8 +15,8 @@ func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 
 	userID, err := h.authService.Me(r.Context(), token)
 	if err != nil {
-		if errors.Is(err, auth.ErrUnauthorized) {
-			helpers.WriteError(w, http.StatusUnauthorized, "unauthorized", "invalid session")
+		if status, code, message, ok := mapAuthError(err); ok {
+			helpers.WriteError(w, status, code, message)
 			return
 		}
 

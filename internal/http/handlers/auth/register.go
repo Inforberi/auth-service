@@ -2,7 +2,6 @@ package auth
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	helpers "github.com/inforberi/auth-service/internal/http/handlers/helpers"
@@ -31,20 +30,8 @@ func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
 	// service register
 	res, err := h.authService.RegisterEmail(r.Context(), input)
 	if err != nil {
-		if errors.Is(err, auth.ErrEmailTaken) {
-			helpers.WriteError(w, http.StatusConflict, "email_taken", err.Error())
-			return
-		}
-
-		// validation errors
-		if errors.Is(err, auth.ErrEmptyEmail) ||
-			errors.Is(err, auth.ErrInvalidEmail) ||
-			errors.Is(err, auth.ErrPasswordTooShort) ||
-			errors.Is(err, auth.ErrPasswordTooLong) ||
-			errors.Is(err, auth.ErrPasswordNoLetter) ||
-			errors.Is(err, auth.ErrPasswordNoDigit) {
-
-			helpers.WriteError(w, http.StatusBadRequest, "validation_error", err.Error())
+		if status, code, message, ok := mapAuthError(err); ok {
+			helpers.WriteError(w, status, code, message)
 			return
 		}
 

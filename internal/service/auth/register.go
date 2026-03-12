@@ -2,8 +2,23 @@ package auth
 
 import (
 	"context"
-	"errors"
+	"time"
 )
+
+type RegisterInput struct {
+	Email     string
+	Password  string
+	IP        *string
+	UserAgent *string
+	DeviceID  *string
+}
+
+type RegisterResult struct {
+	UserID    string
+	SessionID string
+	Token     string
+	ExpiresAt time.Time
+}
 
 func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (RegisterResult, error) {
 	enabled, err := s.repo.IsProviderEnabled(ctx, "email")
@@ -41,7 +56,7 @@ func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (R
 	// Create user
 	userID, sessionVersion, err := s.repo.CreateUserWithEmailPassword(ctx, email, normalizeEmail, hashPassword, now)
 	if err != nil {
-		if errors.Is(err, ErrEmailTaken) {
+		if isRepoEmailTaken(err) {
 			return RegisterResult{}, ErrEmailTaken
 		}
 		return RegisterResult{}, err

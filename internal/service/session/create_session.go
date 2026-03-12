@@ -3,7 +3,14 @@ package session
 import (
 	"context"
 	"crypto/sha256"
+	"time"
 )
+
+type CreateSessionResult struct {
+	SessionID string
+	Token     string
+	ExpiresAt time.Time
+}
 
 func (s *SessionService) CreateSession(ctx context.Context, userID string, sessionVersion int, ip, ua, deviceID *string) (CreateSessionResult, error) {
 	rawToken, err := s.token.New()

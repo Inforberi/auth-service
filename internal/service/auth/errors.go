@@ -2,6 +2,15 @@ package auth
 
 import "errors"
 
+type repoEmailTaken interface {
+	EmailTaken() bool
+}
+
+func isRepoEmailTaken(err error) bool {
+	var marker repoEmailTaken
+	return errors.As(err, &marker) && marker.EmailTaken()
+}
+
 var (
 	// Email
 	ErrEmptyEmail   = errors.New("Email is empty")

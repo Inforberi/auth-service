@@ -2,7 +2,6 @@ package auth
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 
 	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
@@ -30,26 +29,20 @@ func (h *AuthHandler) LoginEmail(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.authService.LoginWithEmail(r.Context(), input)
 	if err != nil {
-		switch {
-		case errors.Is(err, auth.ErrInvalidCredentials):
-			helpers.WriteError(w, http.StatusUnauthorized, "invalid_credentials", err.Error())
-			return
-
-		case errors.Is(err, auth.ErrUserDisabled):
-			helpers.WriteError(w, http.StatusForbidden, "user_disabled", err.Error())
-			return
-
-		default:
-			h.log.Error("login email failed",
-				"err", err,
-				"email", req.Email,
-				"method", r.Method,
-				"path", r.URL.Path,
-			)
-
-			helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
+		if status, code, message, ok := mapAuthError(err); ok {
+			helpers.WriteError(w, status, code, message)
 			return
 		}
+
+		h.log.Error("login email failed",
+			"err", err,
+			"email", req.Email,
+			"method", r.Method,
+			"path", r.URL.Path,
+		)
+
+		helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
+		return
 	}
 
 	helpers.SetSessionCookie(w, res.Token, res.ExpiresAt)
