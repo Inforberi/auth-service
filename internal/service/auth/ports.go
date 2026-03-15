@@ -34,4 +34,6 @@ type SessionCreator interface {
 	) (session.CreateSessionResult, error)
 
 	GetSessionByTokenHash(ctx context.Context, tokenHash []byte) (session.GetSessionResult, error)
+
+	UpdateSessionActivity(ctx context.Context, sessionID string) error
 }

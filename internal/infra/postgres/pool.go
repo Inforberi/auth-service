@@ -8,7 +8,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func NewPgPool(ctx context.Context, cfg config.Postgres) (*pgxpool.Pool, error) {
+func NewPgPool(ctx context.Context, cfg *config.Postgres) (*pgxpool.Pool, error) {
 	pc, err := pgxpool.ParseConfig(cfg.DSN())
 	if err != nil {
 		return nil, fmt.Errorf("parse pg config: %w", err)

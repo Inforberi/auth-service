@@ -29,7 +29,7 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	pgPool, err := postgres.NewPgPool(ctx, cfg.Postgres)
+	pgPool, err := postgres.NewPgPool(ctx, &cfg.Postgres)
 	if err != nil {
 		log.Error("failed to create pg pool", "err", err)
 		return nil, err
@@ -44,7 +44,7 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	token := pkg.SecureTokenGenerator{}
 
 	// services
-	sessionService := session.NewSessionService(sessionRepo, token, clock, cfg.Auth)
+	sessionService := session.NewSessionService(sessionRepo, token, clock, &cfg.Auth)
 	authService := auth.NewAuthService(authRepo, clock, hasher, sessionService)
 
 	// handlers
@@ -52,7 +52,7 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	sessionHandler := sessionHandler.NewSessionHandler(sessionService, log)
 
 	// router
-	router := router.NewRouter(authHandler, sessionHandler, authService)
+	router := router.NewRouter(authHandler, sessionHandler, authService, &cfg.HTTP)
 
 	return &App{
 		Log:    log,

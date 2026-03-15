@@ -12,6 +12,7 @@ type Config struct {
 	Logger   Logger
 	Postgres Postgres
 	Auth     Auth
+	HTTP     HTTP
 }
 
 type Logger struct {
@@ -38,6 +39,45 @@ type Postgres struct {
 type Auth struct {
 	SessionTTL     time.Duration `env:"SESSION_TTL" env-default:"168h"`
 	UpdateInterval time.Duration `env:"UPDATE_INTERVAL" env-default:"5m"`
+}
+
+type HTTP struct {
+	SecurityHeaders SecurityHeaders
+	CORS            CORS
+	RateLimit       RateLimit
+}
+
+type SecurityHeaders struct {
+	EnableHSTS bool `env:"SECURITY_HEADERS_ENABLE_HSTS" env-default:"true"`
+	HSTSMaxAge int  `env:"SECURITY_HEADERS_HSTS_MAX_AGE" env-default:"31536000"`
+}
+
+type CORS struct {
+	AllowedOrigins   []string `env:"HTTP_CORS_ALLOWED_ORIGINS" env-separator:","`
+	AllowedMethods   []string `env:"HTTP_CORS_ALLOWED_METHODS" env-separator:","`
+	AllowedHeaders   []string `env:"HTTP_CORS_ALLOWED_HEADERS" env-separator:","`
+	ExposedHeaders   []string `env:"HTTP_CORS_EXPOSED_HEADERS" env-separator:","`
+	AllowCredentials bool     `env:"HTTP_CORS_ALLOW_CREDENTIALS" env-default:"true"`
+	MaxAge           int      `env:"HTTP_CORS_MAX_AGE" env-default:"300"`
+}
+
+type RateLimit struct {
+	GlobalPerMinute int `env:"HTTP_RATE_LIMIT_GLOBAL_PER_MINUTE" env-default:"120"`
+
+	LoginIPRequests int           `env:"HTTP_RATE_LIMIT_LOGIN_IP_REQUESTS" env-default:"20"`
+	LoginIPWindow   time.Duration `env:"HTTP_RATE_LIMIT_LOGIN_IP_WINDOW" env-default:"1m"`
+
+	LoginEmailRequests int           `env:"HTTP_RATE_LIMIT_LOGIN_EMAIL_REQUESTS" env-default:"10"`
+	LoginEmailWindow   time.Duration `env:"HTTP_RATE_LIMIT_LOGIN_EMAIL_WINDOW" env-default:"15m"`
+
+	LoginIPEmailRequests int           `env:"HTTP_RATE_LIMIT_LOGIN_IPEMAIL_REQUESTS" env-default:"5"`
+	LoginIPEmailWindow   time.Duration `env:"HTTP_RATE_LIMIT_LOGIN_IPEMAIL_WINDOW" env-default:"10m"`
+
+	RegisterIPRequests int           `env:"HTTP_RATE_LIMIT_REGISTER_IP_REQUESTS" env-default:"3"`
+	RegisterIPWindow   time.Duration `env:"HTTP_RATE_LIMIT_REGISTER_IP_WINDOW" env-default:"10m"`
+
+	RegisterEmailRequests int           `env:"HTTP_RATE_LIMIT_REGISTER_EMAIL_REQUESTS" env-default:"3"`
+	RegisterEmailWindow   time.Duration `env:"HTTP_RATE_LIMIT_REGISTER_EMAIL_WINDOW" env-default:"1h"`
 }
 
 func LoadConfig() (*Config, error) {

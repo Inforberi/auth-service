@@ -14,6 +14,6 @@ type SessionService struct {
 	activityUpdateInterval time.Duration
 }
 
-func NewSessionService(repo SessionRepo, token TokenGenerator, clock Clock, auth config.Auth) *SessionService {
+func NewSessionService(repo SessionRepo, token TokenGenerator, clock Clock, auth *config.Auth) *SessionService {
 	return &SessionService{repo: repo, token: token, clock: clock, sessionTTL: auth.SessionTTL, activityUpdateInterval: auth.UpdateInterval}
 }

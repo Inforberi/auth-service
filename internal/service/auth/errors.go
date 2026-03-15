@@ -1,15 +1,10 @@
 package auth
 
-import "errors"
+import (
+	"errors"
 
-type repoEmailTaken interface {
-	EmailTaken() bool
-}
-
-func isRepoEmailTaken(err error) bool {
-	var marker repoEmailTaken
-	return errors.As(err, &marker) && marker.EmailTaken()
-}
+	"github.com/inforberi/auth-service/internal/service/session"
+)
 
 var (
 	// Email
@@ -36,3 +31,25 @@ var (
 	// Common
 	ErrRegister = errors.New("register failed")
 )
+
+func isUnauthorizedSessionError(err error) bool {
+	switch {
+	case errors.Is(err, session.ErrSessionNotFound),
+		errors.Is(err, session.ErrSessionIsRevoked),
+		errors.Is(err, session.ErrSessionIsExpired),
+		errors.Is(err, session.ErrSessionVersionMismatch),
+		errors.Is(err, session.ErrUserIsDisabled):
+		return true
+	default:
+		return false
+	}
+}
+
+type repoEmailTaken interface {
+	EmailTaken() bool
+}
+
+func isRepoEmailTaken(err error) bool {
+	var marker repoEmailTaken
+	return errors.As(err, &marker) && marker.EmailTaken()
+}
