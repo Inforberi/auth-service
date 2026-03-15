@@ -36,7 +36,8 @@ type Postgres struct {
 }
 
 type Auth struct {
-	SessionTTL time.Duration `env:"SESSION_TTL" env-default:"168h"`
+	SessionTTL     time.Duration `env:"SESSION_TTL" env-default:"168h"`
+	UpdateInterval time.Duration `env:"UPDATE_INTERVAL" env-default:"5m"`
 }
 
 func LoadConfig() (*Config, error) {

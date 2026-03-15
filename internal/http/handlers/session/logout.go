@@ -4,20 +4,17 @@ import (
 	"net/http"
 
 	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
+	"github.com/inforberi/auth-service/internal/http/middleware"
 )
 
 func (s *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
-	token, err := helpers.ReadSessionCookie(r)
-	if err != nil {
-		if status, code, message, ok := mapSessionError(err); ok {
-			helpers.WriteError(w, status, code, message)
-			return
-		}
-		helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
+	authInfo, ok := middleware.GetAuthContext(r.Context())
+	if !ok {
+		helpers.WriteError(w, http.StatusUnauthorized, "unauthorized", "missing auth context")
 		return
 	}
 
-	if err = s.sessionService.Logout(r.Context(), token); err != nil {
+	if err := s.sessionService.Logout(r.Context(), authInfo.SessionID); err != nil {
 		if status, code, message, ok := mapSessionError(err); ok {
 			helpers.WriteError(w, status, code, message)
 			return
@@ -38,17 +35,13 @@ func (s *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *SessionHandler) LogoutAll(w http.ResponseWriter, r *http.Request) {
-	token, err := helpers.ReadSessionCookie(r)
-	if err != nil {
-		if status, code, message, ok := mapSessionError(err); ok {
-			helpers.WriteError(w, status, code, message)
-			return
-		}
-		helpers.WriteError(w, http.StatusInternalServerError, "internal_error", "internal server error")
+	authInfo, ok := middleware.GetAuthContext(r.Context())
+	if !ok {
+		helpers.WriteError(w, http.StatusUnauthorized, "unauthorized", "missing auth context")
 		return
 	}
 
-	if err = s.sessionService.LogoutAll(r.Context(), token); err != nil {
+	if err := s.sessionService.LogoutAll(r.Context(), authInfo.UserID); err != nil {
 		if status, code, message, ok := mapSessionError(err); ok {
 			helpers.WriteError(w, status, code, message)
 			return

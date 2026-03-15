@@ -12,7 +12,6 @@ type contextKey string
 
 const authContextKey contextKey = "authContext"
 
-// GetAuthContext извлекает AuthContext из request context
 func GetAuthContext(ctx context.Context) (AuthContext, bool) {
 	v := ctx.Value(authContextKey)
 	if v == nil {

@@ -19,7 +19,7 @@ type SessionRepo interface {
 		found bool,
 		err error,
 	)
-	UpdateSessionLastSeen(ctx context.Context, sessionID string, now time.Time) error
+	UpdateSessionActivity(ctx context.Context, sessionID string, now time.Time, expiresAt time.Time, threshold time.Time) error
 
 	RevokeSession(ctx context.Context, sessionID string, now time.Time) error
 	IncrementUserSessionVersion(ctx context.Context, userID string, now time.Time) error
