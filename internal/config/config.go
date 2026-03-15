@@ -11,6 +11,7 @@ type Config struct {
 	AppEnv   string `env:"APP_ENV" default:"prod"`
 	Logger   Logger
 	Postgres Postgres
+	Redis    Redis
 	Auth     Auth
 	HTTP     HTTP
 }
@@ -34,6 +35,29 @@ type Postgres struct {
 	HealthTimeout   time.Duration `env:"PG_HEALTH_TIMEOUT" env-default:"3s"`
 	MaxConnLifetime time.Duration `env:"PG_MAX_CONN_LIFETIME" env-default:"30m"`
 	MaxConnIdleTime time.Duration `env:"PG_MAX_CONN_IDLE_TIME" env-default:"5m"`
+}
+
+type Redis struct {
+	Enabled bool `env:"REDIS_ENABLED" env-default:"false"`
+
+	Addr string `env:"REDIS_ADDR" env-default:"localhost:6379"`
+
+	Password string `env:"REDIS_PASSWORD"`
+
+	DB int `env:"REDIS_DB" env-default:"0"`
+
+	DialTimeout  time.Duration `env:"REDIS_DIAL_TIMEOUT" env-default:"5s"`
+	ReadTimeout  time.Duration `env:"REDIS_READ_TIMEOUT" env-default:"3s"`
+	WriteTimeout time.Duration `env:"REDIS_WRITE_TIMEOUT" env-default:"3s"`
+
+	PoolSize     int           `env:"REDIS_POOL_SIZE" env-default:"10"`
+	MinIdleConns int           `env:"REDIS_MIN_IDLE_CONNS" env-default:"2"`
+	PoolTimeout  time.Duration `env:"REDIS_POOL_TIMEOUT" env-default:"4s"`
+
+	MaxRetries   int           `env:"REDIS_MAX_RETRIES" env-default:"3"`
+	RetryBackoff time.Duration `env:"REDIS_RETRY_BACKOFF" env-default:"200ms"`
+
+	TLS bool `env:"REDIS_TLS" env-default:"false"`
 }
 
 type Auth struct {
