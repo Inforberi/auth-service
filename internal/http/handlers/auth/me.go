@@ -13,7 +13,7 @@ func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID, err := h.authService.Me(r.Context(), token)
+	authInfo, err := h.authService.Me(r.Context(), token)
 	if err != nil {
 		if status, code, message, ok := mapAuthError(err); ok {
 			helpers.WriteError(w, status, code, message)
@@ -30,6 +30,6 @@ func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	helpers.WriteJSON(w, http.StatusOK, MeResponse{UserID: userID})
+	helpers.WriteJSON(w, http.StatusOK, MeResponse{UserID: authInfo.UserID})
 
 }

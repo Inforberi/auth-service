@@ -7,9 +7,11 @@ import (
 	"github.com/inforberi/auth-service/internal/http/handlers/auth"
 	"github.com/inforberi/auth-service/internal/http/handlers/health"
 	"github.com/inforberi/auth-service/internal/http/handlers/session"
+	"github.com/inforberi/auth-service/internal/http/middleware"
+	authService "github.com/inforberi/auth-service/internal/service/auth"
 )
 
-func NewRouter(authHandler *auth.AuthHandler, sessionHandler *session.SessionHandler) http.Handler {
+func NewRouter(authHandler *auth.AuthHandler, sessionHandler *session.SessionHandler, authService *authService.AuthService) http.Handler {
 	r := chi.NewRouter()
 
 	r.Get("/health", health.Health)
@@ -19,11 +21,19 @@ func NewRouter(authHandler *auth.AuthHandler, sessionHandler *session.SessionHan
 			r.Post("/register/email", authHandler.RegisterEmail)
 			r.Post("/login/email", authHandler.LoginEmail)
 
-			r.Post("/logout", sessionHandler.Logout)
-			r.Post("/logout-all", sessionHandler.LogoutAll)
+			r.Group(func(r chi.Router) {
+				r.Use(middleware.Auth(authService))
+				r.Get("/me", authHandler.Me)
+				r.Post("/logout", sessionHandler.Logout)
+				r.Post("/logout-all", sessionHandler.LogoutAll)
 
-			r.Get("/me", authHandler.Me)
+				// r.Route("/users", func(r chi.Router) {
+				// 	r.Get("/profile", usersHandler.GetProfile)
+				// 	r.Patch("/profile", usersHandler.UpdateProfile)
+				// })
+			})
 		})
+
 	})
 
 	return r

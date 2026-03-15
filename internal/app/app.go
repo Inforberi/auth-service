@@ -52,7 +52,7 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	sessionHandler := sessionHandler.NewSessionHandler(sessionService, log)
 
 	// router
-	router := router.NewRouter(authHandler, sessionHandler)
+	router := router.NewRouter(authHandler, sessionHandler, authService)
 
 	return &App{
 		Log:    log,

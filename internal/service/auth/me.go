@@ -8,7 +8,13 @@ import (
 	"github.com/inforberi/auth-service/internal/service/session"
 )
 
-func (s *AuthService) Me(ctx context.Context, token string) (string, error) {
+type AuthInfo struct {
+	UserID         string
+	SessionID      string
+	SessionVersion int
+}
+
+func (s *AuthService) Me(ctx context.Context, token string) (AuthInfo, error) {
 	hash := sha256.Sum256([]byte(token))
 	tokenHash := hash[:]
 
@@ -20,12 +26,12 @@ func (s *AuthService) Me(ctx context.Context, token string) (string, error) {
 			errors.Is(err, session.ErrSessionIsExpired),
 			errors.Is(err, session.ErrSessionVersionMismatch),
 			errors.Is(err, session.ErrUserIsDisabled):
-			return "", ErrUnauthorized
+			return AuthInfo{}, ErrUnauthorized
 		default:
-			return "", err
+			return AuthInfo{}, err
 		}
 	}
 
-	return sess.UserID, nil
+	return AuthInfo{UserID: sess.UserID, SessionID: sess.SessionID, SessionVersion: sess.SessionVersion}, nil
 
 }
