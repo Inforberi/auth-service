@@ -45,6 +45,7 @@ type HTTP struct {
 	SecurityHeaders SecurityHeaders
 	CORS            CORS
 	RateLimit       RateLimit
+	BodyLimit       BodyLimit
 }
 
 type SecurityHeaders struct {
@@ -78,6 +79,10 @@ type RateLimit struct {
 
 	RegisterEmailRequests int           `env:"HTTP_RATE_LIMIT_REGISTER_EMAIL_REQUESTS" env-default:"3"`
 	RegisterEmailWindow   time.Duration `env:"HTTP_RATE_LIMIT_REGISTER_EMAIL_WINDOW" env-default:"1h"`
+}
+
+type BodyLimit struct {
+	AuthBytes int64 `env:"HTTP_BODY_LIMIT_AUTH_BYTES" env-default:"16384"`
 }
 
 func LoadConfig() (*Config, error) {

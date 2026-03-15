@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/inforberi/auth-service/internal/config"
-	router "github.com/inforberi/auth-service/internal/http"
 	authHandler "github.com/inforberi/auth-service/internal/http/handlers/auth"
 	sessionHandler "github.com/inforberi/auth-service/internal/http/handlers/session"
+	router "github.com/inforberi/auth-service/internal/http/router"
 	"github.com/inforberi/auth-service/internal/infra/postgres"
 	"github.com/inforberi/auth-service/internal/pkg"
 	repoAuth "github.com/inforberi/auth-service/internal/repository/postgres/auth"
