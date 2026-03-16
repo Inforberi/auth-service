@@ -3,6 +3,8 @@ package session
 import (
 	"context"
 	"time"
+
+	"github.com/inforberi/auth-service/internal/model/sessionmodel"
 )
 
 type SessionRepo interface {
@@ -23,6 +25,19 @@ type SessionRepo interface {
 
 	RevokeSession(ctx context.Context, sessionID string, now time.Time) error
 	IncrementUserSessionVersion(ctx context.Context, userID string, now time.Time) error
+}
+
+type SessionCache interface {
+	GetSession(ctx context.Context, tokenHash []byte) (sessionmodel.CacheSession, bool, error)
+
+	SetSession(
+		ctx context.Context,
+		tokenHash []byte,
+		snap sessionmodel.CacheSession,
+		ttl time.Duration,
+	) error
+
+	DeleteSession(ctx context.Context, tokenHash []byte) error
 }
 
 type Clock interface {

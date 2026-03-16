@@ -10,11 +10,13 @@ import (
 	authHandler "github.com/inforberi/auth-service/internal/http/handlers/auth"
 	sessionHandler "github.com/inforberi/auth-service/internal/http/handlers/session"
 	router "github.com/inforberi/auth-service/internal/http/router"
-	"github.com/inforberi/auth-service/internal/infra/postgres"
+	infraPg "github.com/inforberi/auth-service/internal/infra/postgres"
 	"github.com/inforberi/auth-service/internal/infra/redis"
+	infraRedis "github.com/inforberi/auth-service/internal/infra/redis"
 	"github.com/inforberi/auth-service/internal/pkg"
-	repoAuth "github.com/inforberi/auth-service/internal/repository/postgres/auth"
-	repoSession "github.com/inforberi/auth-service/internal/repository/postgres/session"
+	authpg "github.com/inforberi/auth-service/internal/repository/postgres/authpg"
+	sessionpg "github.com/inforberi/auth-service/internal/repository/postgres/sessionpg"
+	"github.com/inforberi/auth-service/internal/repository/redis/sessionredis"
 	"github.com/inforberi/auth-service/internal/service/auth"
 	"github.com/inforberi/auth-service/internal/service/session"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -32,22 +34,25 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	defer cancel()
 
 	// postgres
-	pgPool, err := postgres.NewPgPool(ctx, &cfg.Postgres)
+	pgPool, err := infraPg.NewPgPool(ctx, &cfg.Postgres)
 	if err != nil {
 		log.Error("failed to create pg pool", "err", err)
 		return nil, err
 	}
 
 	// redis
-	redis, err := redis.NewClient(ctx, cfg.Redis)
+	redisClient, err := infraRedis.NewClient(ctx, cfg.Redis)
 	if err != nil {
 		log.Error("failed to create redis db", "err", err)
 		return nil, err
 	}
 
+	// redis repo
+	redisRepo := sessionredis.NewStore(redisClient.Raw())
+
 	// repo
-	authRepo := repoAuth.NewAuthRepo(pgPool)
-	sessionRepo := repoSession.NewSessionRepo(pgPool)
+	authRepo := authpg.NewAuthRepo(pgPool)
+	sessionRepo := sessionpg.NewSessionRepo(pgPool)
 
 	// service deps
 	clock := pkg.SystemClock{}
@@ -55,7 +60,7 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	token := pkg.SecureTokenGenerator{}
 
 	// services
-	sessionService := session.NewSessionService(sessionRepo, token, clock, &cfg.Auth)
+	sessionService := session.NewSessionService(sessionRepo, token, clock, &cfg.Auth, redisRepo)
 	authService := auth.NewAuthService(authRepo, clock, hasher, sessionService)
 
 	// handlers
@@ -69,6 +74,6 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 		Log:         log,
 		pgPool:      pgPool,
 		Router:      router,
-		redisClient: redis,
+		redisClient: redisClient,
 	}, nil
 }
