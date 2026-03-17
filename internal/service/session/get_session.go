@@ -11,6 +11,12 @@ type GetSessionResult struct {
 }
 
 func (s *SessionService) GetSessionByTokenHash(ctx context.Context, tokenHash []byte) (GetSessionResult, error) {
+	now := s.clock.Now().UTC()
+
+	if res, ok, err := s.getSessionFromCache(ctx, tokenHash, now); err != nil || ok {
+		return res, err
+	}
+
 	sessionID, userID, sessionVersion, expiresAt, revokedAt, actualSessionVersion, disabledAt, found, err := s.repo.GetSessionByTokenHash(ctx, tokenHash)
 	if err != nil {
 		return GetSessionResult{}, ErrGetSession
@@ -19,8 +25,6 @@ func (s *SessionService) GetSessionByTokenHash(ctx context.Context, tokenHash []
 	if !found {
 		return GetSessionResult{}, ErrSessionNotFound
 	}
-
-	now := s.clock.Now().UTC()
 
 	if revokedAt != nil && !revokedAt.After(now) {
 		return GetSessionResult{}, ErrSessionIsRevoked
@@ -37,6 +41,8 @@ func (s *SessionService) GetSessionByTokenHash(ctx context.Context, tokenHash []
 	if disabledAt != nil && !disabledAt.After(now) {
 		return GetSessionResult{}, ErrUserIsDisabled
 	}
+
+	s.warmSessionCache(ctx, tokenHash, userID, sessionID, sessionVersion, actualSessionVersion, expiresAt, revokedAt, disabledAt)
 
 	return GetSessionResult{
 		SessionID:      sessionID,

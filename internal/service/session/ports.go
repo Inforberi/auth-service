@@ -38,6 +38,9 @@ type SessionCache interface {
 	) error
 
 	DeleteSession(ctx context.Context, tokenHash []byte) error
+
+	GetUserSessionVersion(ctx context.Context, userID string) (int, bool, error)
+	SetUserSessionVersion(ctx context.Context, userID string, version int) error
 }
 
 type Clock interface {

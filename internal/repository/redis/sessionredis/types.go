@@ -7,3 +7,7 @@ type SessionSnapshot struct {
 	ExpiresAtUnix  int64  `json:"expires_at_unix"`
 	Revoked        bool   `json:"revoked"`
 }
+
+type userSessionVersion struct {
+	ActualSessionVersion int `json:"actual_session_version"`
+}
