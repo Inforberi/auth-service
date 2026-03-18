@@ -6,13 +6,17 @@ import (
 	"fmt"
 )
 
-func (s *SessionService) Logout(ctx context.Context, sessionID string) error {
+func (s *SessionService) Logout(ctx context.Context, sessionID string, tokenHash []byte) error {
 
-	if err := s.RevokeSession(ctx, sessionID); err != nil {
+	if err := s.revokeSession(ctx, sessionID); err != nil {
 		if errors.Is(err, ErrSessionNotFound) {
 			return nil
 		}
 		return fmt.Errorf("%w: %v", ErrRevokeSession, err)
+	}
+
+	if s.cache != nil {
+		s.deleteSessionCache(ctx, tokenHash)
 	}
 
 	return nil
@@ -20,11 +24,16 @@ func (s *SessionService) Logout(ctx context.Context, sessionID string) error {
 
 func (s *SessionService) LogoutAll(ctx context.Context, userID string) error {
 
-	if err := s.repo.IncrementUserSessionVersion(ctx, userID, s.clock.Now().UTC()); err != nil {
+	newVersion, err := s.repo.IncrementUserSessionVersion(ctx, userID, s.clock.Now().UTC())
+	if err != nil {
 		if isRepoUserNotFound(err) {
 			return ErrUserNotFound
 		}
 		return fmt.Errorf("%w: %v", ErrLogoutAll, err)
+	}
+
+	if s.cache != nil {
+		_ = s.cache.SetUserSessionVersion(ctx, userID, newVersion)
 	}
 	return nil
 }

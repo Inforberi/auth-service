@@ -24,7 +24,7 @@ type SessionRepo interface {
 	UpdateSessionActivity(ctx context.Context, sessionID string, now time.Time, expiresAt time.Time, threshold time.Time) error
 
 	RevokeSession(ctx context.Context, sessionID string, now time.Time) error
-	IncrementUserSessionVersion(ctx context.Context, userID string, now time.Time) error
+	IncrementUserSessionVersion(ctx context.Context, userID string, now time.Time) (int, error)
 }
 
 type SessionCache interface {

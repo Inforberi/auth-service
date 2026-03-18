@@ -38,20 +38,19 @@ func (s *SessionRepo) RevokeSession(
 	return nil
 }
 
-func (s *SessionRepo) IncrementUserSessionVersion(ctx context.Context, userID string, now time.Time) error {
-	ct, err := s.db.Exec(ctx, `
+func (s *SessionRepo) IncrementUserSessionVersion(ctx context.Context, userID string, now time.Time) (int, error) {
+	var sessionVersion int
+	
+	err := s.db.QueryRow(ctx, `
 	update users
 	set session_version = session_version + 1,
 	    updated_at = $2
 	where id = $1
-	`, userID, now)
+	returning session_version
+	`, userID, now).Scan(&sessionVersion)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	if ct.RowsAffected() == 0 {
-		return ErrUserNotFound
-	}
-
-	return nil
+	return sessionVersion, err
 }

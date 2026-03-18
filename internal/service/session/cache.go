@@ -7,7 +7,7 @@ import (
 	"github.com/inforberi/auth-service/internal/model/sessionmodel"
 )
 
-func (s *SessionService) warmSessionCache(
+func (s *SessionService) setSessionCache(
 	ctx context.Context,
 	tokenHash []byte,
 	userID string,
@@ -78,4 +78,12 @@ func (s *SessionService) getSessionFromCache(
 		UserID:         cached.UserID,
 		SessionVersion: cached.SessionVersion,
 	}, true, nil
+}
+
+func (s *SessionService) deleteSessionCache(ctx context.Context, tokenHash []byte) {
+	if s.cache == nil {
+		return
+	}
+
+	_ = s.cache.DeleteSession(ctx, tokenHash)
 }

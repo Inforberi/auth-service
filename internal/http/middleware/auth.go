@@ -33,6 +33,7 @@ func Auth(authService *auth.AuthService) func(http.Handler) http.Handler {
 				UserID:         authInfo.UserID,
 				SessionID:      authInfo.SessionID,
 				SessionVersion: authInfo.SessionVersion,
+				TokenHash:      authInfo.TokenHash,
 			})
 
 			next.ServeHTTP(w, r.WithContext(ctx))

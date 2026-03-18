@@ -14,7 +14,7 @@ func (s *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := s.sessionService.Logout(r.Context(), authInfo.SessionID); err != nil {
+	if err := s.sessionService.Logout(r.Context(), authInfo.SessionID, authInfo.TokenHash); err != nil {
 		if status, code, message, ok := mapSessionError(err); ok {
 			helpers.WriteError(w, status, code, message)
 			return

@@ -42,7 +42,7 @@ func (s *SessionService) GetSessionByTokenHash(ctx context.Context, tokenHash []
 		return GetSessionResult{}, ErrUserIsDisabled
 	}
 
-	s.warmSessionCache(ctx, tokenHash, userID, sessionID, sessionVersion, actualSessionVersion, expiresAt, revokedAt, disabledAt)
+	s.setSessionCache(ctx, tokenHash, userID, sessionID, sessionVersion, actualSessionVersion, expiresAt, revokedAt, disabledAt)
 
 	return GetSessionResult{
 		SessionID:      sessionID,

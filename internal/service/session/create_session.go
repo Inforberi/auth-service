@@ -30,6 +30,11 @@ func (s *SessionService) CreateSession(ctx context.Context, userID string, sessi
 		return CreateSessionResult{}, ErrCreateSession
 	}
 
+	// create cache
+	if s.cache != nil {
+		s.setSessionCache(ctx, tokenHash, userID, sessionID, sessionVersion, sessionVersion, expiresAt, nil, nil)
+	}
+
 	return CreateSessionResult{
 		SessionID: sessionID,
 		Token:     rawToken,

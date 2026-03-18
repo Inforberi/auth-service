@@ -9,6 +9,7 @@ type AuthInfo struct {
 	UserID         string
 	SessionID      string
 	SessionVersion int
+	TokenHash      []byte
 }
 
 func (s *AuthService) Me(ctx context.Context, token string) (AuthInfo, error) {
@@ -25,6 +26,6 @@ func (s *AuthService) Me(ctx context.Context, token string) (AuthInfo, error) {
 
 	_ = s.sessions.UpdateSessionActivity(ctx, sess.SessionID)
 
-	return AuthInfo{UserID: sess.UserID, SessionID: sess.SessionID, SessionVersion: sess.SessionVersion}, nil
+	return AuthInfo{UserID: sess.UserID, SessionID: sess.SessionID, SessionVersion: sess.SessionVersion, TokenHash: tokenHash}, nil
 
 }

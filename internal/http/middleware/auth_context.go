@@ -6,6 +6,7 @@ type AuthContext struct {
 	UserID         string
 	SessionID      string
 	SessionVersion int
+	TokenHash      []byte
 }
 
 type contextKey string
