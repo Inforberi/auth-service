@@ -24,7 +24,7 @@ func (s *AuthService) Me(ctx context.Context, token string) (AuthInfo, error) {
 		return AuthInfo{}, err
 	}
 
-	_ = s.sessions.UpdateSessionActivity(ctx, sess.SessionID)
+	_ = s.sessions.UpdateSessionActivity(ctx, sess.SessionID, tokenHash)
 
 	return AuthInfo{UserID: sess.UserID, SessionID: sess.SessionID, SessionVersion: sess.SessionVersion, TokenHash: tokenHash}, nil
 

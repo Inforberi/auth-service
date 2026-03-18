@@ -61,8 +61,9 @@ type Redis struct {
 }
 
 type Auth struct {
-	SessionTTL     time.Duration `env:"SESSION_TTL" env-default:"168h"`
-	UpdateInterval time.Duration `env:"UPDATE_INTERVAL" env-default:"5m"`
+	SessionTTL          time.Duration `env:"SESSION_TTL" env-default:"168h"`
+	UpdateInterval      time.Duration `env:"UPDATE_INTERVAL" env-default:"5m"`
+	RefreshBeforeExpiry time.Duration `env:"SESSION_REFRESH_BEFORE_EXPIRY" env-default:"24h"`
 }
 
 type HTTP struct {

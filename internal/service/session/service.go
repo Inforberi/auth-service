@@ -7,14 +7,14 @@ import (
 )
 
 type SessionService struct {
-	repo                   SessionRepo
-	cache                  SessionCache
-	clock                  Clock
-	token                  TokenGenerator
-	sessionTTL             time.Duration
-	activityUpdateInterval time.Duration
+	repo       SessionRepo
+	cache      SessionCache
+	clock      Clock
+	token      TokenGenerator
+	sessionTTL time.Duration
+	auth       *config.Auth
 }
 
 func NewSessionService(repo SessionRepo, token TokenGenerator, clock Clock, auth *config.Auth, cache SessionCache) *SessionService {
-	return &SessionService{repo: repo, token: token, clock: clock, sessionTTL: auth.SessionTTL, activityUpdateInterval: auth.UpdateInterval, cache: cache}
+	return &SessionService{repo: repo, token: token, clock: clock, sessionTTL: auth.SessionTTL, auth: auth, cache: cache}
 }
