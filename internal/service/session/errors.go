@@ -35,4 +35,7 @@ var (
 	ErrRevokeSession          = errors.New("Error revoke session")
 	ErrUserNotFound           = errors.New("User not found")
 	ErrLogoutAll              = errors.New("logout all failed")
+
+	// redis
+	ErrCacheSync = errors.New("cache sync failed")
 )

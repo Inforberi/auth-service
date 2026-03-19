@@ -46,6 +46,11 @@ func (s *SessionService) getSessionFromCache(
 		return GetSessionResult{}, false, nil
 	}
 
+	revoked, err := s.cache.IsSessionRevoked(ctx, tokenHash)
+	if err == nil && revoked {
+		return GetSessionResult{}, false, ErrSessionIsRevoked
+	}
+
 	cached, found, err := s.cache.GetSession(ctx, tokenHash)
 	if err != nil || !found {
 		return GetSessionResult{}, false, nil

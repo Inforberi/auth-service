@@ -41,6 +41,9 @@ type SessionCache interface {
 
 	GetUserSessionVersion(ctx context.Context, userID string) (int, bool, error)
 	SetUserSessionVersion(ctx context.Context, userID string, version int) error
+
+	IsSessionRevoked(ctx context.Context, tokenHash []byte) (bool, error)
+	MarkSessionRevoked(ctx context.Context, tokenHash []byte, ttl time.Duration) error
 }
 
 type Clock interface {

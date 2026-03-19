@@ -9,14 +9,18 @@ import (
 func (s *SessionService) Logout(ctx context.Context, sessionID string, tokenHash []byte) error {
 
 	if err := s.revokeSession(ctx, sessionID); err != nil {
-		if errors.Is(err, ErrSessionNotFound) {
-			return nil
+		if !errors.Is(err, ErrSessionNotFound) {
+			return fmt.Errorf("%w: %v", ErrRevokeSession, err)
 		}
 		return fmt.Errorf("%w: %v", ErrRevokeSession, err)
 	}
 
 	if s.cache != nil {
-		s.deleteSessionCache(ctx, tokenHash)
+		if err := s.cache.MarkSessionRevoked(ctx, tokenHash, s.sessionTTL); err != nil {
+			return fmt.Errorf("%w: %v", ErrCacheSync, err)
+		}
+
+		_ = s.cache.DeleteSession(ctx, tokenHash)
 	}
 
 	return nil
@@ -33,7 +37,10 @@ func (s *SessionService) LogoutAll(ctx context.Context, userID string) error {
 	}
 
 	if s.cache != nil {
-		_ = s.cache.SetUserSessionVersion(ctx, userID, newVersion)
+		if err := s.cache.SetUserSessionVersion(ctx, userID, newVersion); err != nil {
+			return fmt.Errorf("%w: %v", ErrCacheSync, err)
+		}
 	}
+	
 	return nil
 }
