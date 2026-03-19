@@ -2,7 +2,10 @@ package session
 
 import (
 	"context"
+	"errors"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 )
 
 func (s *SessionRepo) RevokeSession(
@@ -49,6 +52,9 @@ func (s *SessionRepo) IncrementUserSessionVersion(ctx context.Context, userID st
 	returning session_version
 	`, userID, now).Scan(&sessionVersion)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, ErrUserNotFound
+		}
 		return 0, err
 	}
 

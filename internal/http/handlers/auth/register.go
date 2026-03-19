@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
 	helpers "github.com/inforberi/auth-service/internal/http/handlers/helpers"
@@ -11,7 +12,13 @@ import (
 func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
 	var req registerEmailRequest
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&req); err != nil {
+		helpers.WriteError(w, http.StatusBadRequest, "invalid_request", "invalid json body")
+		return
+	}
+	if err := dec.Decode(&struct{}{}); err != io.EOF {
 		helpers.WriteError(w, http.StatusBadRequest, "invalid_request", "invalid json body")
 		return
 	}

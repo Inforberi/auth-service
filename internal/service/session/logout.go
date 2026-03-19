@@ -2,16 +2,12 @@ package session
 
 import (
 	"context"
-	"errors"
 	"fmt"
 )
 
 func (s *SessionService) Logout(ctx context.Context, sessionID string, tokenHash []byte) error {
 
 	if err := s.revokeSession(ctx, sessionID); err != nil {
-		if !errors.Is(err, ErrSessionNotFound) {
-			return fmt.Errorf("%w: %v", ErrRevokeSession, err)
-		}
 		return fmt.Errorf("%w: %v", ErrRevokeSession, err)
 	}
 
