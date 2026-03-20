@@ -6,19 +6,19 @@ import (
 	"github.com/inforberi/auth-service/internal/http/handlers/auth"
 	"github.com/inforberi/auth-service/internal/http/handlers/session"
 	"github.com/inforberi/auth-service/internal/http/middleware"
-	authService "github.com/inforberi/auth-service/internal/service/auth"
+	"github.com/inforberi/auth-service/internal/service/auth/email"
 )
 
 func mountAuthRoutes(
 	r chi.Router,
 	authHandler *auth.AuthHandler,
 	sessionHandler *session.SessionHandler,
-	authService *authService.AuthService,
+	emailService *email.EmailService,
 	cfg *config.HTTP,
 ) {
 	r.Route("/auth", func(r chi.Router) {
 		mountPublicAuthRoutes(r, authHandler, cfg)
-		mountProtectedAuthRoutes(r, authHandler, sessionHandler, authService, cfg)
+		mountProtectedAuthRoutes(r, authHandler, sessionHandler, emailService, cfg)
 	})
 }
 
@@ -38,7 +38,7 @@ func mountProtectedAuthRoutes(
 	r chi.Router,
 	authHandler *auth.AuthHandler,
 	sessionHandler *session.SessionHandler,
-	authService *authService.AuthService,
+	authService *email.EmailService,
 	cfg *config.HTTP,
 ) {
 	csrf := csrfMiddleware(cfg)

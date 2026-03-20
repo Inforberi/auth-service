@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
-	"github.com/inforberi/auth-service/internal/service/session"
+	"github.com/inforberi/auth-service/internal/service/auth/session"
 )
 
 func mapSessionError(err error) (status int, code string, message string, ok bool) {

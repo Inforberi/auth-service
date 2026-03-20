@@ -1,9 +1,9 @@
-package auth
+package email
 
 import (
 	"errors"
 
-	"github.com/inforberi/auth-service/internal/service/session"
+	"github.com/inforberi/auth-service/internal/service/auth/session"
 )
 
 var (

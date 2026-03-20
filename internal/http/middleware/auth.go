@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
-	"github.com/inforberi/auth-service/internal/service/auth"
+	"github.com/inforberi/auth-service/internal/service/auth/email"
 )
 
-func Auth(authService *auth.AuthService) func(http.Handler) http.Handler {
+func Auth(authService *email.EmailService) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			token, err := helpers.ReadSessionCookie(r)
@@ -20,7 +20,7 @@ func Auth(authService *auth.AuthService) func(http.Handler) http.Handler {
 
 			authInfo, err := authService.Me(r.Context(), token)
 			if err != nil {
-				if errors.Is(err, auth.ErrUnauthorized) {
+				if errors.Is(err, email.ErrUnauthorized) {
 					helpers.WriteError(w, http.StatusUnauthorized, "unauthorized", "invalid session")
 					return
 				}

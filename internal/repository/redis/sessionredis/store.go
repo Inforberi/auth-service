@@ -6,7 +6,7 @@ type Store struct {
 	rdb *goredis.Client
 }
 
-func NewStore(rdb *goredis.Client) *Store {
+func New(rdb *goredis.Client) *Store {
 	if rdb == nil {
 		return nil
 	}

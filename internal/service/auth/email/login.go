@@ -1,4 +1,4 @@
-package auth
+package email
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type LoginResult struct {
 	ExpiresAt time.Time
 }
 
-func (s *AuthService) LoginWithEmail(ctx context.Context, input LoginInput) (LoginResult, error) {
+func (s *EmailService) Login(ctx context.Context, input LoginInput) (LoginResult, error) {
 	email := input.Email
 	password := input.Password
 	normEmail := NormalizeEmail(email)

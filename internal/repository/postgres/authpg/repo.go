@@ -6,6 +6,6 @@ type AuthRepo struct {
 	db *pgxpool.Pool
 }
 
-func NewAuthRepo(db *pgxpool.Pool) *AuthRepo {
+func New(db *pgxpool.Pool) *AuthRepo {
 	return &AuthRepo{db: db}
 }

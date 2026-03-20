@@ -15,6 +15,6 @@ type SessionService struct {
 	auth       *config.Auth
 }
 
-func NewSessionService(repo SessionRepo, token TokenGenerator, clock Clock, auth *config.Auth, cache SessionCache) *SessionService {
+func New(repo SessionRepo, token TokenGenerator, clock Clock, auth *config.Auth, cache SessionCache) *SessionService {
 	return &SessionService{repo: repo, token: token, clock: clock, sessionTTL: auth.SessionTTL, auth: auth, cache: cache}
 }

@@ -1,13 +1,13 @@
-package auth
+package email
 
 import (
 	"context"
 	"time"
 
-	"github.com/inforberi/auth-service/internal/service/session"
+	"github.com/inforberi/auth-service/internal/service/auth/session"
 )
 
-type Auth interface {
+type Email interface {
 	// register
 	IsProviderEnabled(ctx context.Context, code string) (bool, error)
 	CreateUserWithEmailPassword(ctx context.Context, email, emailNorm, passwordHash string, now time.Time) (userID string, sessionVersion int, err error)

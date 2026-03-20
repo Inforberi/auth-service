@@ -8,10 +8,10 @@ import (
 	"github.com/inforberi/auth-service/internal/http/handlers/auth"
 	"github.com/inforberi/auth-service/internal/http/handlers/health"
 	"github.com/inforberi/auth-service/internal/http/handlers/session"
-	authService "github.com/inforberi/auth-service/internal/service/auth"
+	"github.com/inforberi/auth-service/internal/service/auth/email"
 )
 
-func NewRouter(authHandler *auth.AuthHandler, sessionHandler *session.SessionHandler, authService *authService.AuthService, cfg *config.HTTP) http.Handler {
+func NewRouter(authHandler *auth.AuthHandler, sessionHandler *session.SessionHandler, authService *email.EmailService, cfg *config.HTTP) http.Handler {
 	r := chi.NewRouter()
 
 	applyBaseMiddlewares(r, cfg)

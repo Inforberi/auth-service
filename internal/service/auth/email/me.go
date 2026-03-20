@@ -1,4 +1,4 @@
-package auth
+package email
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type AuthInfo struct {
 	TokenHash      []byte
 }
 
-func (s *AuthService) Me(ctx context.Context, token string) (AuthInfo, error) {
+func (s *EmailService) Me(ctx context.Context, token string) (AuthInfo, error) {
 	hash := sha256.Sum256([]byte(token))
 	tokenHash := hash[:]
 

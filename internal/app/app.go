@@ -17,8 +17,9 @@ import (
 	authpg "github.com/inforberi/auth-service/internal/repository/postgres/authpg"
 	sessionpg "github.com/inforberi/auth-service/internal/repository/postgres/sessionpg"
 	"github.com/inforberi/auth-service/internal/repository/redis/sessionredis"
-	"github.com/inforberi/auth-service/internal/service/auth"
-	"github.com/inforberi/auth-service/internal/service/session"
+	"github.com/inforberi/auth-service/internal/service/auth/email"
+	"github.com/inforberi/auth-service/internal/service/auth/session"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -41,34 +42,34 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	}
 
 	// redis
-	redisClient, err := infraRedis.NewClient(ctx, cfg.Redis)
+	redisClient, err := infraRedis.New(ctx, cfg.Redis)
 	if err != nil {
 		log.Error("failed to create redis db", "err", err)
 		return nil, err
 	}
 
 	// redis repo
-	redisRepo := sessionredis.NewStore(redisClient.Raw())
+	redisRepo := sessionredis.New(redisClient.Raw())
 
 	// repo
-	authRepo := authpg.NewAuthRepo(pgPool)
-	sessionRepo := sessionpg.NewSessionRepo(pgPool)
+	authRepo := authpg.New(pgPool)
+	sessionRepo := sessionpg.New(pgPool)
 
 	// service deps
 	clock := pkg.SystemClock{}
-	hasher := auth.Argon2idHasher{}
+	hasher := email.Argon2idHasher{}
 	token := pkg.SecureTokenGenerator{}
 
 	// services
-	sessionService := session.NewSessionService(sessionRepo, token, clock, &cfg.Auth, redisRepo)
-	authService := auth.NewAuthService(authRepo, clock, hasher, sessionService)
+	sessionService := session.New(sessionRepo, token, clock, &cfg.Auth, redisRepo)
+	emailService := email.New(authRepo, clock, hasher, sessionService)
 
 	// handlers
-	authHandler := authHandler.NewAuthHandler(authService, log)
+	authHandler := authHandler.NewAuthHandler(emailService, log)
 	sessionHandler := sessionHandler.NewSessionHandler(sessionService, log)
 
 	// router
-	router := router.NewRouter(authHandler, sessionHandler, authService, &cfg.HTTP)
+	router := router.NewRouter(authHandler, sessionHandler, emailService, &cfg.HTTP)
 
 	return &App{
 		Log:         log,

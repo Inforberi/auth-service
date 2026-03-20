@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	helpers "github.com/inforberi/auth-service/internal/http/handlers/helpers"
-	"github.com/inforberi/auth-service/internal/service/auth"
+	"github.com/inforberi/auth-service/internal/service/auth/email"
 )
 
 func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +26,7 @@ func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
 	// get client info
 	client := helpers.ExtractClientInfo(r)
 
-	input := auth.RegisterInput{
+	input := email.RegisterInput{
 		Email:     req.Email,
 		Password:  req.Password,
 		IP:        client.IP,
@@ -35,7 +35,7 @@ func (h *AuthHandler) RegisterEmail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// service register
-	res, err := h.authService.RegisterEmail(r.Context(), input)
+	res, err := h.authService.Register(r.Context(), input)
 	if err != nil {
 		if status, code, message, ok := mapAuthError(err); ok {
 			helpers.WriteError(w, status, code, message)

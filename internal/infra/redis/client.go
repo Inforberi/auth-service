@@ -14,7 +14,7 @@ type Client struct {
 	rdb *goredis.Client
 }
 
-func NewClient(ctx context.Context, cfg config.Redis) (*Client, error) {
+func New(ctx context.Context, cfg config.Redis) (*Client, error) {
 	if !cfg.Enabled {
 		return nil, nil
 	}

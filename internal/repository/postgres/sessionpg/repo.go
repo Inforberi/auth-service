@@ -6,7 +6,7 @@ type SessionRepo struct {
 	db *pgxpool.Pool
 }
 
-func NewSessionRepo(db *pgxpool.Pool) *SessionRepo {
+func New(db *pgxpool.Pool) *SessionRepo {
 	return &SessionRepo{
 		db: db,
 	}

@@ -3,7 +3,7 @@ package session
 import (
 	"log/slog"
 
-	"github.com/inforberi/auth-service/internal/service/session"
+	"github.com/inforberi/auth-service/internal/service/auth/session"
 )
 
 type SessionHandler struct {

@@ -1,4 +1,4 @@
-package auth
+package email
 
 import (
 	"context"
@@ -20,7 +20,7 @@ type RegisterResult struct {
 	ExpiresAt time.Time
 }
 
-func (s *AuthService) RegisterEmail(ctx context.Context, input RegisterInput) (RegisterResult, error) {
+func (s *EmailService) Register(ctx context.Context, input RegisterInput) (RegisterResult, error) {
 	enabled, err := s.repo.IsProviderEnabled(ctx, "email")
 	if err != nil {
 		return RegisterResult{}, err
