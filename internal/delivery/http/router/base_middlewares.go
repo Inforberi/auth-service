@@ -6,7 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/inforberi/auth-service/internal/config"
-	"github.com/inforberi/auth-service/internal/http/middleware"
+	"github.com/inforberi/auth-service/internal/delivery/http/middleware"
 )
 
 func applyBaseMiddlewares(r chi.Router, cfg *config.HTTP) {

@@ -1,4 +1,4 @@
-package auth
+package email
 
 type registerEmailRequest struct {
 	Email    string `json:"email"`

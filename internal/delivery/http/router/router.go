@@ -5,13 +5,13 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/inforberi/auth-service/internal/config"
-	"github.com/inforberi/auth-service/internal/http/handlers/auth"
-	"github.com/inforberi/auth-service/internal/http/handlers/health"
-	"github.com/inforberi/auth-service/internal/http/handlers/session"
-	"github.com/inforberi/auth-service/internal/service/auth/email"
+	"github.com/inforberi/auth-service/internal/delivery/http/handlers/email"
+	"github.com/inforberi/auth-service/internal/delivery/http/handlers/health"
+	"github.com/inforberi/auth-service/internal/delivery/http/handlers/session"
+	emailService "github.com/inforberi/auth-service/internal/service/auth/email"
 )
 
-func NewRouter(authHandler *auth.AuthHandler, sessionHandler *session.SessionHandler, authService *email.EmailService, cfg *config.HTTP) http.Handler {
+func NewRouter(emailHandler *email.EmailHandler, sessionHandler *session.SessionHandler, authService *emailService.EmailService, cfg *config.HTTP) http.Handler {
 	r := chi.NewRouter()
 
 	applyBaseMiddlewares(r, cfg)
@@ -21,7 +21,7 @@ func NewRouter(authHandler *auth.AuthHandler, sessionHandler *session.SessionHan
 	r.Route("/v1", func(r chi.Router) {
 		r.Use(globalRateLimit(cfg))
 
-		mountAuthRoutes(r, authHandler, sessionHandler, authService, cfg)
+		mountAuthRoutes(r, emailHandler, sessionHandler, authService, cfg)
 	})
 
 	return r

@@ -7,9 +7,10 @@ import (
 	"time"
 
 	"github.com/inforberi/auth-service/internal/config"
-	authHandler "github.com/inforberi/auth-service/internal/http/handlers/auth"
-	sessionHandler "github.com/inforberi/auth-service/internal/http/handlers/session"
-	router "github.com/inforberi/auth-service/internal/http/router"
+	"github.com/inforberi/auth-service/internal/delivery/http/router"
+
+	emailHandler "github.com/inforberi/auth-service/internal/delivery/http/handlers/email"
+	sessionHandler "github.com/inforberi/auth-service/internal/delivery/http/handlers/session"
 	infraPg "github.com/inforberi/auth-service/internal/infra/postgres"
 	"github.com/inforberi/auth-service/internal/infra/redis"
 	infraRedis "github.com/inforberi/auth-service/internal/infra/redis"
@@ -65,11 +66,11 @@ func NewApp(cfg *config.Config, log *slog.Logger) (*App, error) {
 	emailService := email.New(authRepo, clock, hasher, sessionService)
 
 	// handlers
-	authHandler := authHandler.NewAuthHandler(emailService, log)
-	sessionHandler := sessionHandler.NewSessionHandler(sessionService, log)
+	emailHandler := emailHandler.New(emailService, log)
+	sessionHandler := sessionHandler.New(sessionService, log)
 
 	// router
-	router := router.NewRouter(authHandler, sessionHandler, emailService, &cfg.HTTP)
+	router := router.NewRouter(emailHandler, sessionHandler, emailService, &cfg.HTTP)
 
 	return &App{
 		Log:         log,

@@ -3,7 +3,7 @@ package health
 import (
 	"net/http"
 
-	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
+	"github.com/inforberi/auth-service/internal/delivery/http/handlers/helpers"
 )
 
 func Health(w http.ResponseWriter, r *http.Request) {

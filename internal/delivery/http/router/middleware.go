@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/inforberi/auth-service/internal/config"
-	"github.com/inforberi/auth-service/internal/http/middleware"
+	"github.com/inforberi/auth-service/internal/delivery/http/middleware"
 )
 
 func globalRateLimit(cfg *config.HTTP) func(http.Handler) http.Handler {

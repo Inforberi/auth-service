@@ -11,6 +11,6 @@ type SessionHandler struct {
 	log            *slog.Logger
 }
 
-func NewSessionHandler(sessionService *session.SessionService, log *slog.Logger) *SessionHandler {
+func New(sessionService *session.SessionService, log *slog.Logger) *SessionHandler {
 	return &SessionHandler{sessionService: sessionService, log: log}
 }

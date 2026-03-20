@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
+	"github.com/inforberi/auth-service/internal/delivery/http/handlers/helpers"
 	"github.com/inforberi/auth-service/internal/service/auth/email"
 )
 

@@ -3,40 +3,40 @@ package router
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/inforberi/auth-service/internal/config"
-	"github.com/inforberi/auth-service/internal/http/handlers/auth"
-	"github.com/inforberi/auth-service/internal/http/handlers/session"
-	"github.com/inforberi/auth-service/internal/http/middleware"
+	emailHandler "github.com/inforberi/auth-service/internal/delivery/http/handlers/email"
+	"github.com/inforberi/auth-service/internal/delivery/http/handlers/session"
+	"github.com/inforberi/auth-service/internal/delivery/http/middleware"
 	"github.com/inforberi/auth-service/internal/service/auth/email"
 )
 
 func mountAuthRoutes(
 	r chi.Router,
-	authHandler *auth.AuthHandler,
+	emailHandler *emailHandler.EmailHandler,
 	sessionHandler *session.SessionHandler,
 	emailService *email.EmailService,
 	cfg *config.HTTP,
 ) {
 	r.Route("/auth", func(r chi.Router) {
-		mountPublicAuthRoutes(r, authHandler, cfg)
-		mountProtectedAuthRoutes(r, authHandler, sessionHandler, emailService, cfg)
+		mountPublicAuthRoutes(r, emailHandler, cfg)
+		mountProtectedAuthRoutes(r, emailHandler, sessionHandler, emailService, cfg)
 	})
 }
 
 func mountPublicAuthRoutes(
 	r chi.Router,
-	authHandler *auth.AuthHandler,
+	emailHandler *emailHandler.EmailHandler,
 	cfg *config.HTTP,
 ) {
 	r.With(registerRouteMiddlewares(cfg)...).
-		Post("/register/email", authHandler.RegisterEmail)
+		Post("/register/email", emailHandler.RegisterEmail)
 
 	r.With(loginRouteMiddlewares(cfg)...).
-		Post("/login/email", authHandler.LoginEmail)
+		Post("/login/email", emailHandler.LoginEmail)
 }
 
 func mountProtectedAuthRoutes(
 	r chi.Router,
-	authHandler *auth.AuthHandler,
+	authHandler *emailHandler.EmailHandler,
 	sessionHandler *session.SessionHandler,
 	authService *email.EmailService,
 	cfg *config.HTTP,

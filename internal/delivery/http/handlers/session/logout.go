@@ -3,8 +3,8 @@ package session
 import (
 	"net/http"
 
-	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
-	"github.com/inforberi/auth-service/internal/http/middleware"
+	"github.com/inforberi/auth-service/internal/delivery/http/handlers/helpers"
+	"github.com/inforberi/auth-service/internal/delivery/http/middleware"
 )
 
 func (s *SessionHandler) Logout(w http.ResponseWriter, r *http.Request) {

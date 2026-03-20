@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/inforberi/auth-service/internal/http/handlers/helpers"
+	"github.com/inforberi/auth-service/internal/delivery/http/handlers/helpers"
 )
 
 type CSRFConfig struct {
